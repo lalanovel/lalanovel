@@ -15,6 +15,7 @@ async function init() {
     } else if (['home', 'series', 'latest'].includes(hash)) {
       navigateTo(hash);
     }
+    trackSiteView();
   } catch (err) {
     console.error('Failed to load data:', err);
   }
@@ -54,11 +55,58 @@ function renderCover(s) {
 function volCount(s) { return s.volumes ? s.volumes.length : 1; }
 function volLabel(s) { const n = volCount(s); return n > 1 ? n + ' VOLUMES' : 'COMPLETE'; }
 
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d)) return '';
+  return MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+}
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d)) return '';
+  const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+  if (days <= 0) return 'TODAY';
+  if (days === 1) return '1 DAY AGO';
+  if (days < 30) return days + ' DAYS AGO';
+  if (days < 365) return Math.floor(days / 30) + ' MONTHS AGO';
+  return Math.floor(days / 365) + ' YEARS AGO';
+}
+
+/* === VIEW COUNTER (Abacus, free) === */
+async function hitView(variable) {
+  try {
+    const r = await fetch('https://abacus.jasoncameron.dev/hit/lalanovel/' + variable);
+    const j = await r.json();
+    return j.value;
+  } catch (e) { return null; }
+}
+
+function fmtNum(n) {
+  if (n == null) return '';
+  return n.toLocaleString('en-US');
+}
+
+async function trackSeriesView(seriesId) {
+  const el = document.getElementById('view-count');
+  if (!el) return;
+  const v = await hitView(seriesId);
+  if (v != null) el.textContent = fmtNum(v);
+}
+
+async function trackSiteView() {
+  const els = document.querySelectorAll('.site-views');
+  const v = await hitView('_site_total');
+  if (v == null) return;
+  els.forEach(el => el.textContent = fmtNum(v));
+}
+
 function allVols() {
   const out = [];
   data.series.forEach(s => {
     if (s.volumes) { s.volumes.forEach(v => out.push({...v, seriesId: s.id, seriesTitle: s.title, cover: s.cover})); }
-    else { out.push({vol:1, title:s.title, epub:s.epub, download:s.download, seriesId:s.id, seriesTitle:s.title, cover:s.cover}); }
+    else { out.push({vol:1, title:s.title, epub:s.epub, download:s.download, date:s.date, translation:s.translation, seriesId:s.id, seriesTitle:s.title, cover:s.cover}); }
   });
   return out;
 }
@@ -91,7 +139,7 @@ function renderHome() {
       <div class="stats-inner">
         <div class="stat-card"><span class="stat-label">SERIES</span><span class="stat-value">${data.series.length}</span></div>
         <div class="stat-card"><span class="stat-label">TOTAL VOLUMES</span><span class="stat-value">${totalVolumes}</span></div>
-        <div class="stat-card"><span class="stat-label">STATUS</span><span class="stat-value">Completed</span></div>
+        <div class="stat-card"><span class="stat-label">TOTAL VIEWS</span><span class="stat-value site-views">...</span></div>
       </div>
     </section>
 
@@ -143,6 +191,7 @@ function seriesCard(s) {
       <div class="series-cover">${renderCover(s)}</div>
       <span class="series-volumes">${volLabel(s)}${s.translation === 'mtl' ? ' <span class="mtl-badge">MTL</span>' : ''}</span>
       <span class="series-name">${s.title}</span>
+      ${s.date ? `<span class="series-date">${formatDate(s.date)}</span>` : ''}
       ${s.tags && s.tags.length ? `<div class="card-tags">${s.tags.slice(0,3).map(t=>`<span class="card-tag">${t}</span>`).join('')}</div>` : ''}
     </div>`;
 }
@@ -194,10 +243,11 @@ function renderSeries() {
 /* === LATEST === */
 function renderLatest() {
   const all = allVols().filter(v => v.download || v.epub);
+  all.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   document.getElementById('page-latest').innerHTML = `
     <section class="latest-page">
       <h1 class="page-title">Download List</h1>
-      <p class="page-subtitle">All available volumes with EPUB download links.</p>
+      <p class="page-subtitle">All available volumes with EPUB download links, sorted by release date.</p>
       <div class="latest-list">
         ${all.map(v => `
           <div class="latest-item" onclick="navigateTo('detail','${v.seriesId}')">
@@ -205,6 +255,7 @@ function renderLatest() {
             <div class="latest-item-info">
               <span class="latest-series-name">${v.seriesTitle}</span>
               <span class="latest-chapter-name">${v.title}</span>
+              <span class="latest-date">${v.date ? formatDate(v.date) : ''} ${v.date ? '· ' + timeAgo(v.date) : ''}</span>
             </div>
             ${v.download ? `<a href="${encodeURI(v.download)}" class="btn-dl" onclick="event.stopPropagation()">Download</a>` : ''}
           </div>`).join('')}
@@ -253,6 +304,7 @@ function renderDetail(seriesId) {
           ${s.tags && s.tags.length ? `<div class="tag-list">${s.tags.map(t=>`<span class="tag genre-tag">${t}</span>`).join('')}</div>` : ''}
           <p class="detail-desc">${s.description || 'By ' + s.author + '.'}</p>
           <span class="status-badge ${s.status}"><span class="status-dot"></span> ${s.status.toUpperCase()}</span>
+          ${s.date ? `<span class="detail-date">Originally published ${formatDate(s.date)}</span>` : ''}
           <div class="detail-actions">
             ${vols[0].download ? `<a href="${encodeURI(vols[0].download)}" class="btn btn-start">Download</a>` : ''}
           </div>
@@ -268,6 +320,7 @@ function renderDetail(seriesId) {
               ${multi ? `<div class="meta-item"><span class="meta-label">VOLUMES</span><span class="meta-value">${vols.length}</span></div>` : ''}
               <div class="meta-item"><span class="meta-label">STATUS</span><span class="meta-value">${s.status}</span></div>
               <div class="meta-item"><span class="meta-label">TRANSLATION</span><span class="meta-value">${allHtl ? 'HTL (Full)' : hasMtl ? 'Mixed (MTL + HTL)' : 'All MTL'}</span></div>
+              <div class="meta-item"><span class="meta-label">VIEWS</span><span class="meta-value" id="view-count">...</span></div>
               ${s.altJp ? `<div class="meta-item"><span class="meta-label">JAPANESE</span><span class="meta-value">${s.altJp}</span></div>` : ''}
             </div>
           </div>
@@ -288,7 +341,7 @@ function renderDetail(seriesId) {
               <div class="chapter-item">
                 <div class="chapter-item-left">
                   <span class="chapter-vol-tag">${v.title || s.title}${v.translation ? ` <span class="vol-translation-badge vol-${v.translation}">${v.translation.toUpperCase()}</span>` : ''}</span>
-                  <span class="chapter-item-date">${s.author}</span>
+                  <span class="chapter-item-date">${s.author}${v.date ? ' · Uploaded ' + formatDate(v.date) : ''}</span>
                 </div>
                 <a href="${encodeURI(v.download)}" class="btn-dl">Download</a>
               </div>` : ''}
@@ -297,6 +350,7 @@ function renderDetail(seriesId) {
         </main>
       </div>
     </section>`;
+  trackSeriesView(seriesId);
 }
 
 /* === FOOTER === */
@@ -308,6 +362,7 @@ function renderFooter() {
     <a href="javascript:void(0)" onclick="navigateTo('latest')">Download List</a>
     ${sample.map(s => `<a href="javascript:void(0)" onclick="navigateTo('detail','${s.id}')">${s.title}</a>`).join('')}
     <a href="#">Privacy</a><a href="#">DMCA</a>`;
+  document.getElementById('footerViews').innerHTML = '👁 <span class="site-views">...</span> total views';
 }
 
 window.addEventListener('hashchange', () => {

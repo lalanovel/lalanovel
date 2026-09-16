@@ -486,6 +486,7 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 
 .series-volumes { font-size: 0.65rem; font-weight: 600; color: var(--text-muted); margin-top: 8px; display: block; }
 .series-name { font-size: 0.82rem; font-weight: 700; color: var(--text); display: block; }
+.series-date { font-size: 0.65rem; font-weight: 600; color: var(--text-muted); display: block; margin-top: 2px; }
 
 /* LATEST CHAPTERS CAROUSEL */
 .latest-section { padding: 0 24px 40px; }
@@ -638,6 +639,14 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.detail-date {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
   margin-bottom: 12px;
 }
 
@@ -830,6 +839,26 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
 }
 
 .footer-links a:hover { background: var(--text); color: white; border-color: var(--text); }
+
+.footer-views-bar {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  margin-top: 16px;
+}
+
+.footer-views-inner {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.footer-views-inner .site-views { color: var(--green); font-weight: 700; }
+
+/* View count in sidebar meta */
+.meta-value#view-count { font-variant-numeric: tabular-nums; }
 
 /* EMPTY STATE */
 .empty-state {
