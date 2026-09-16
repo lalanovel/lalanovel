@@ -279,7 +279,6 @@ function renderDetail(seriesId) {
               <div class="volume-text">
                 <div class="volume-header">
                   <h2 class="volume-title">${multi ? 'Volume ' + v.vol : 'Download'}</h2>
-                  ${v.download ? `<a href="${encodeURI(v.download)}" class="btn btn-start btn-dl-vol">Download EPUB</a>` : ''}
                 </div>
               </div>
               ${v.cover ? `<div class="volume-cover"><img src="${v.cover}" onerror="this.parentElement.style.display='none'" alt="${v.title}"></div>` : ''}
