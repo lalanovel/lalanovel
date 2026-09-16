@@ -222,6 +222,10 @@ function renderDetail(seriesId) {
   if (s.altJp) alts.push(s.altJp);
   if (s.altEn) alts.push(s.altEn);
 
+  const volTranslations = vols.map(v => v.translation || s.translation || 'mtl');
+  const hasMtl = volTranslations.some(t => t === 'mtl');
+  const allHtl = volTranslations.every(t => t === 'htl');
+
   document.getElementById('page-detail').innerHTML = `
     <div class="breadcrumb-bar">
       <div class="breadcrumb-inner">
@@ -230,13 +234,13 @@ function renderDetail(seriesId) {
         <span class="breadcrumb-current">${s.title.toUpperCase()}</span>
       </div>
     </div>
-    ${s.translation === 'mtl' ? `
+    ${hasMtl ? `
     <div class="mtl-warning">
       <div class="mtl-warning-inner">
         <span class="mtl-icon">⚠️</span>
         <div>
           <strong>Peringatan MTL (Machine Translation)</strong>
-          <span>Terjemahan ini dikerjakan menggunakan bantuan mesin (AI). Hasil mungkin tidak sempurna. Jika ada kesalahan, silakan kontribusi melalui Discord!</span>
+          <span>Beberapa volume ini dikerjakan menggunakan bantuan mesin (AI). Hasil mungkin tidak sempurna. Jika ada kesalahan, silakan kontribusi melalui Discord!</span>
         </div>
       </div>
     </div>` : ''}
@@ -263,7 +267,7 @@ function renderDetail(seriesId) {
               <div class="meta-item"><span class="meta-label">AUTHOR</span><span class="meta-value">${s.author}</span></div>
               ${multi ? `<div class="meta-item"><span class="meta-label">VOLUMES</span><span class="meta-value">${vols.length}</span></div>` : ''}
               <div class="meta-item"><span class="meta-label">STATUS</span><span class="meta-value">${s.status}</span></div>
-              <div class="meta-item"><span class="meta-label">TRANSLATION</span><span class="meta-value">${s.translation === 'mtl' ? 'MTL' : 'HTL'}</span></div>
+              <div class="meta-item"><span class="meta-label">TRANSLATION</span><span class="meta-value">${allHtl ? 'HTL (Full)' : hasMtl ? 'Mixed (MTL + HTL)' : 'All MTL'}</span></div>
               ${s.altJp ? `<div class="meta-item"><span class="meta-label">JAPANESE</span><span class="meta-value">${s.altJp}</span></div>` : ''}
             </div>
           </div>
@@ -287,7 +291,10 @@ function renderDetail(seriesId) {
                   <span class="chapter-vol-tag">${v.title || s.title}</span>
                   <span class="chapter-item-date">${s.author}</span>
                 </div>
-                <a href="${encodeURI(v.download)}" class="btn-dl">Download</a>
+                <div class="chapter-item-right">
+                  ${v.translation ? `<span class="vol-translation-badge vol-${v.translation}">${v.translation.toUpperCase()}</span>` : ''}
+                  <a href="${encodeURI(v.download)}" class="btn-dl">Download</a>
+                </div>
               </div>` : ''}
             </div>
           </div>`).join('')}

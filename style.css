@@ -839,6 +839,37 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   font-size: 0.9rem;
 }
 
+/* PER-VOLUME TRANSLATION BADGES */
+.vol-translation-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.vol-mtl {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+}
+
+.vol-htl {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #28a745;
+}
+
+.chapter-item-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 /* RESPONSIVE */
 @media (max-width: 900px) {
   .featured-inner { flex-direction: column; align-items: center; text-align: center; }
