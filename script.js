@@ -288,13 +288,10 @@ function renderDetail(seriesId) {
               ${v.download ? `
               <div class="chapter-item">
                 <div class="chapter-item-left">
-                  <span class="chapter-vol-tag">${v.title || s.title}</span>
+                  <span class="chapter-vol-tag">${v.title || s.title}${v.translation ? ` <span class="vol-translation-badge vol-${v.translation}">${v.translation.toUpperCase()}</span>` : ''}</span>
                   <span class="chapter-item-date">${s.author}</span>
                 </div>
-                <div class="chapter-item-right">
-                  ${v.translation ? `<span class="vol-translation-badge vol-${v.translation}">${v.translation.toUpperCase()}</span>` : ''}
-                  <a href="${encodeURI(v.download)}" class="btn-dl">Download</a>
-                </div>
+                <a href="${encodeURI(v.download)}" class="btn-dl">Download</a>
               </div>` : ''}
             </div>
           </div>`).join('')}
