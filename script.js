@@ -141,7 +141,7 @@ function matchesQuery(s, q) {
 function seriesCard(s) {
   return `<div class="series-card" onclick="navigateTo('detail','${s.id}')">
       <div class="series-cover">${renderCover(s)}</div>
-      <span class="series-volumes">${volLabel(s)}</span>
+      <span class="series-volumes">${volLabel(s)}${s.translation === 'mtl' ? ' <span class="mtl-badge">MTL</span>' : ''}</span>
       <span class="series-name">${s.title}</span>
       ${s.tags && s.tags.length ? `<div class="card-tags">${s.tags.slice(0,3).map(t=>`<span class="card-tag">${t}</span>`).join('')}</div>` : ''}
     </div>`;
@@ -230,6 +230,16 @@ function renderDetail(seriesId) {
         <span class="breadcrumb-current">${s.title.toUpperCase()}</span>
       </div>
     </div>
+    ${s.translation === 'mtl' ? `
+    <div class="mtl-warning">
+      <div class="mtl-warning-inner">
+        <span class="mtl-icon">⚠️</span>
+        <div>
+          <strong>Peringatan MTL (Machine Translation)</strong>
+          <span>Terjemahan ini dikerjakan menggunakan bantuan mesin (AI). Hasil mungkin tidak sempurna. Jika ada kesalahan, silakan kontribusi melalui Discord!</span>
+        </div>
+      </div>
+    </div>` : ''}
     <section class="detail-hero">
       <div class="detail-hero-inner">
         <div class="detail-cover-wrap"><div class="detail-cover">${renderCover(s)}</div></div>
@@ -253,6 +263,7 @@ function renderDetail(seriesId) {
               <div class="meta-item"><span class="meta-label">AUTHOR</span><span class="meta-value">${s.author}</span></div>
               ${multi ? `<div class="meta-item"><span class="meta-label">VOLUMES</span><span class="meta-value">${vols.length}</span></div>` : ''}
               <div class="meta-item"><span class="meta-label">STATUS</span><span class="meta-value">${s.status}</span></div>
+              <div class="meta-item"><span class="meta-label">TRANSLATION</span><span class="meta-value">${s.translation === 'mtl' ? 'MTL' : 'HTL'}</span></div>
               ${s.altJp ? `<div class="meta-item"><span class="meta-label">JAPANESE</span><span class="meta-value">${s.altJp}</span></div>` : ''}
             </div>
           </div>
