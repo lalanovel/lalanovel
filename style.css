@@ -870,6 +870,63 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   flex-shrink: 0;
 }
 
+/* MTL MARQUEE WARNING BANNER */
+.mtl-warning {
+  background: linear-gradient(135deg, #2a211c, #3d3228);
+  border-bottom: 2px solid var(--border-dark);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.mtl-led-label {
+  flex-shrink: 0;
+  background: #ffc107;
+  color: #2a211c;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  padding: 10px 14px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: inset -6px 0 8px -4px rgba(0,0,0,0.4);
+}
+
+.mtl-marquee {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  padding: 10px 0;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 30px, black calc(100% - 30px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 30px, black calc(100% - 30px), transparent);
+}
+
+.mtl-marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+  animation: mtl-scroll 25s linear infinite;
+}
+
+.mtl-marquee:hover .mtl-marquee-track {
+  animation-play-state: paused;
+}
+
+.mtl-marquee-track span {
+  padding-right: 80px;
+  color: #ffe08a;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+@keyframes mtl-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 /* RESPONSIVE */
 @media (max-width: 900px) {
   .featured-inner { flex-direction: column; align-items: center; text-align: center; }

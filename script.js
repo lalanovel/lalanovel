@@ -236,11 +236,11 @@ function renderDetail(seriesId) {
     </div>
     ${hasMtl ? `
     <div class="mtl-warning">
-      <div class="mtl-warning-inner">
-        <span class="mtl-icon">⚠️</span>
-        <div>
-          <strong>Peringatan MTL (Machine Translation)</strong>
-          <span>Beberapa volume ini dikerjakan menggunakan bantuan mesin (AI). Hasil mungkin tidak sempurna. Jika ada kesalahan, silakan kontribusi melalui Discord!</span>
+      <span class="mtl-led-label">⚠️ MTL</span>
+      <div class="mtl-marquee">
+        <div class="mtl-marquee-track">
+          <span>Machine Translation (MTL) — sebagian volume diterjemahkan otomatis oleh AI, hasil mungkin tidak sempurna. Laporkan kesalahan di Discord kami!</span>
+          <span>Machine Translation (MTL) — sebagian volume diterjemahkan otomatis oleh AI, hasil mungkin tidak sempurna. Laporkan kesalahan di Discord kami!</span>
         </div>
       </div>
     </div>` : ''}
